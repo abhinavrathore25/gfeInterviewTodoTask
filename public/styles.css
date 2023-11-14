@@ -46,3 +46,14 @@ h4 {
     margin: 0;
     padding: 0px 12px 0px 8px;
 }
+
+.listItem>p{
+    margin: 0;
+    text-align: left;
+    padding: 0;
+}
+
+.listItem>span{
+    
+    text-decoration-color: red;
+}

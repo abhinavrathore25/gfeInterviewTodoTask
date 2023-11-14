@@ -2,32 +2,54 @@ import { useEffect, useState } from "react";
 
 function App() {
 
-  const [listOfCloumns, setListOfCloumns] = useState(
-    [{ name: 'Winnie', items: [] }, { name: 'Bob', items: [] }, { name: 'Thomas', items: [] }, { name: 'George', items: [] }]
+  const [listOfColumns, setListOfColumns] = useState(
+    [
+      {
+        name: 'Winnie',
+        items: ['First default message of Winnie', 'Second default message of Winnie']
+      },
+      {
+        name: 'Bob',
+        items: ['First default message of Bob', 'Second default message of Bob']
+      },
+      {
+        name: 'Thomas',
+        items: ['First default message of Thomas', 'Second default message of Thomas']
+      },
+      {
+        name: 'George',
+        items: ['First default message of George', 'Second default message of George']
+      }
+    ]
   );
+
+  const headingColors = ['#8E6E95', '#39A59C', '#344759', '#E8741E'];
 
   useEffect(() => {
     const localList = localStorage.getItem('listOfItems');
-    // console.log(localList);
-    if (localList !== undefined)
-      setListOfCloumns(JSON.parse(localList));
+    if (localList !== null) setListOfColumns(JSON.parse(localList));
   }, []);
 
-  const headingColors = ['#8E6E95', '#39A59C', '#344759', '#E8741E'];
+  const updateLocalStorage = (data) => {
+    localStorage.setItem('listOfItems', JSON.stringify(data));
+    setListOfColumns(data);
+  };
 
   function handleAdd(index) {
 
     const task = window.prompt('Enter a task:');
+    if (task === null) return;
 
-    let newList = JSON.parse(JSON.stringify(listOfCloumns));
-    newList[index].items.push(task);
-    localStorage.setItem('listOfItems', JSON.stringify(newList))
-    setListOfCloumns(newList);
+    const newList = listOfColumns.map((column, i) =>
+      i === index ? { ...column, items: [...column.items, task] } : column
+    );
+
+    updateLocalStorage(newList);
   }
 
   function handleMoveTask(indexOfList, indexOfTask, task, type) {
 
-    let newList = JSON.parse(JSON.stringify(listOfCloumns));
+    let newList = JSON.parse(JSON.stringify(listOfColumns));
     newList[indexOfList].items.splice(indexOfTask, 1);
 
     switch (type) {
@@ -35,12 +57,12 @@ function App() {
         if (indexOfList > 0)
           newList[indexOfList - 1].items.push(task);
         else {
-          newList[listOfCloumns.length - 1].items.push(task);
+          newList[listOfColumns.length - 1].items.push(task);
         }
         break;
 
       case 'r':
-        if (indexOfList < listOfCloumns.length - 1)
+        if (indexOfList < listOfColumns.length - 1)
           newList[indexOfList + 1].items.push(task);
         else {
           newList[0].items.push(task);
@@ -51,28 +73,43 @@ function App() {
         return;
     }
 
+    updateLocalStorage(newList);
+  }
 
-    localStorage.setItem('listOfItems', JSON.stringify(newList))
-    setListOfCloumns(newList);
+  function handleDelete(indexOfList, indexOfTask) {
+    let newList = JSON.parse(JSON.stringify(listOfColumns));
+    newList[indexOfList].items.splice(indexOfTask, 1);
+
+    const item = document.getElementById(`${indexOfList}${indexOfTask}`);
+    item.style.textDecoration = 'line-through';
+
+    setTimeout(() => {
+      item.style.textDecoration = 'none';
+      updateLocalStorage(newList);
+    }, 300);
   }
 
   return (
     <div className='columnContainer'>
 
-      {listOfCloumns.map((item, indexOfList) => {
+      {listOfColumns.map((item, indexOfList) => {
         return <div key={indexOfList} className="column">
-          <h4 style={{backgroundColor: headingColors[indexOfList]}}>{item.name}</h4>
+          <h4 style={{ backgroundColor: headingColors[indexOfList] }}>{item.name}</h4>
 
           {item.items.length !== 0 && item.items.map((task, indexOfTask) => {
 
             return <div key={indexOfTask} className="listItem">
-              <button onClick={() => { handleMoveTask(indexOfList, indexOfTask, task, 'l') }}><i class="fa-solid fa-angle-left"></i></button>
-              {task}
-              <button onClick={() => { handleMoveTask(indexOfList, indexOfTask, task, 'r') }}><i class="fa-solid fa-angle-right"></i></button>
+              <button onClick={() => { handleMoveTask(indexOfList, indexOfTask, task, 'l') }}><i className="fa-solid fa-angle-left"></i></button>
+              <p onClick={() => handleDelete(indexOfList, indexOfTask)} id={`${indexOfList}${indexOfTask}`}>
+                {task}
+              </p>
+              <button onClick={() => { handleMoveTask(indexOfList, indexOfTask, task, 'r') }}><i className="fa-solid fa-angle-right"></i></button>
             </div>
           })}
 
-          <button onClick={() => handleAdd(indexOfList)}>+ Add a card</button>
+          <button onClick={() => handleAdd(indexOfList)}>
+            + Add a card
+          </button>
         </div>
       })}
 
