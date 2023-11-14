@@ -1,0 +1,48 @@
+body {
+    background-color: #ECEEEE;
+    padding: 0;
+    margin: 0;
+}
+
+h4 {
+    padding: 0;
+    margin: 0;
+    line-height: 30px;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+.columnContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 25px;
+    padding: 25px;
+    text-align: center;
+}
+
+.column>button {
+    margin: 12px 0;
+    background: transparent;
+    border: none;
+    float: left;
+    color: #a8a8a8;
+}
+
+.column>div {
+    display: grid;
+    grid-template-columns: 25px 1fr 25px;
+    padding: 14px 0;
+
+}
+
+.listItem {
+    margin-top: 3px;
+    background-color: #fff;
+}
+
+.listItem>button {
+    border: none;
+    background-color: transparent;
+    margin: 0;
+    padding: 0px 12px 0px 8px;
+}
